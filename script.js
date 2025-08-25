@@ -30,3 +30,61 @@ document.querySelectorAll('.btn').forEach(button => {
     setTimeout(() => circle.remove(), 600);
   });
 });
+
+
+// Carousel functionality
+const track = document.querySelector('.carousel-track');
+const slides = Array.from(track.children);
+const nextButton = document.querySelector('.carousel-btn.next');
+const prevButton = document.querySelector('.carousel-btn.prev');
+const dotNav = document.querySelector('.carousel-dots');
+
+let currentIndex = 0;
+
+// Generate dots
+slides.forEach((_, index) => {
+  const dot = document.createElement('button');
+  if (index === 0) dot.classList.add('active');
+  dotNav.appendChild(dot);
+
+  dot.addEventListener('click', () => {
+    currentIndex = index;
+    updateCarousel();
+  });
+});
+
+const dots = Array.from(dotNav.children);
+
+function updateCarousel() {
+  track.style.transform = `translateX(-${currentIndex * 100}%)`;
+  dots.forEach(dot => dot.classList.remove('active'));
+  dots[currentIndex].classList.add('active');
+}
+
+// Buttons
+nextButton.addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % slides.length;
+  updateCarousel();
+});
+
+prevButton.addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+  updateCarousel();
+});
+
+// Swipe support (mobile)
+let startX = 0;
+track.addEventListener('touchstart', e => {
+  startX = e.touches[0].clientX;
+});
+
+track.addEventListener('touchend', e => {
+  const endX = e.changedTouches[0].clientX;
+  if (startX - endX > 50) {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateCarousel();
+  } else if (endX - startX > 50) {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    updateCarousel();
+  }
+});
